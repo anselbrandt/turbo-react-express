@@ -34,8 +34,10 @@ var createServer = () => {
   const app = (0, import_express.default)();
   app.disable("x-powered-by").use((0, import_morgan.default)("dev")).use((0, import_body_parser.urlencoded)({ extended: true })).use((0, import_body_parser.json)()).use((0, import_cors.default)()).get("/message/:name", (req, res) => {
     return res.json({ message: `hello ${req.params.name}` });
-  }).get("/status", (_, res) => {
+  }).get("/healthcheck", (_, res) => {
     return res.json({ ok: true });
+  }).get("/", (_, res) => {
+    return res.send("hello");
   });
   return app;
 };
