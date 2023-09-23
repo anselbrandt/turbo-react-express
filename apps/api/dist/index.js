@@ -30,12 +30,21 @@ var import_body_parser = require("body-parser");
 var import_express = __toESM(require("express"));
 var import_morgan = __toESM(require("morgan"));
 var import_cors = __toESM(require("cors"));
+var import_mongodb = require("mongodb");
+var url = "mongodb://localhost:27017/";
+var client = new import_mongodb.MongoClient(url);
+(async () => await client.connect())().catch((error) => console.log(error));
 var createServer = () => {
   const app = (0, import_express.default)();
-  app.disable("x-powered-by").use((0, import_morgan.default)("dev")).use((0, import_body_parser.urlencoded)({ extended: true })).use((0, import_body_parser.json)()).use((0, import_cors.default)()).get("/message/:name", (req, res) => {
-    return res.json({ message: `hello ${req.params.name}` });
-  }).get("/healthcheck", (_, res) => {
+  app.disable("x-powered-by").use((0, import_morgan.default)("dev")).use((0, import_body_parser.urlencoded)({ extended: true })).use((0, import_body_parser.json)()).use((0, import_cors.default)()).get("/healthcheck", (_, res) => {
     return res.json({ ok: true });
+  }).get("/message/:name", (req, res) => {
+    return res.json({ message: `hello ${req.params.name}` });
+  }).get("/mongo", async (req, res) => {
+    await client.db("admin").command({ ping: 1 });
+    const adminClient = client.db().admin();
+    const dbInfo = await adminClient.listDatabases();
+    return res.json({ dbInfo });
   }).get("/", (_, res) => {
     return res.send("hello");
   });
